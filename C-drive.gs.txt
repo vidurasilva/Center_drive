@@ -1,0 +1,74 @@
+function doGet(e) {
+  return HtmlService.createHtmlOutputFromFile('form.html');
+        
+}
+
+function uploadFiles(form) {
+  
+  try {
+    // Get the email address of the active user - that's you.
+        var email = Session.getActiveUser().getEmail();
+    //get date,month,day
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = now.getMonth();
+      var day = now.getDay();
+    //get month
+   
+        
+     var dropbox = email;
+    var folder, folders = DriveApp.getFoldersByName(dropbox);
+    
+    var daymonth= year+'/'+month+'/'+day;
+     var folderD, folderDs = DriveApp.getFoldersByName(daymonth);
+    
+    
+    
+    if (folderDs.hasNext()) {
+      folderD = folderDs.next();
+    } else {
+      folderD = DriveApp.createFolder(daymonth);
+    }
+     if (folders.hasNext()) {
+      folder = folders.next();
+    } else {
+      folder = folderD.createFolder(dropbox);
+    }
+    
+    var blob = form.myFile;    
+    var file = folder.createFile(blob);    
+    file.setDescription("Uploaded by " + form.myName);
+    
+        
+     // Create a new Google Doc named 'Hello, world!'
+      // var doc =DocumentApp.create(daymonth+' '+email);
+      
+        // Access the body of the document, then add a paragraph.
+      //  doc.getBody().appendParagraph('sender of document '+email+ '\n'+ 'URL of document '+ file.getUrl());
+       // doc file name file
+      // var blob = doc;
+       // var fileD = folderD.createFile(blob); 
+        
+        
+        // Get the URL of the document.
+        var url = file.getUrl();
+        
+        // Get the name of the document to use as an email subject line.
+        var subject = 'Verification';
+        var admin='vidurasilva@cloudpartner.biz';
+        
+        // Append a new string to the "url" variable to use as an email body.
+        var body = 'This Document send by : '+ email + url;
+      
+        // Send yourself an email with a link to the document.
+        GmailApp.sendEmail(admin, subject, body);
+        
+        return file.getUrl() ;
+        
+    
+  } catch (error) {
+    
+    return error.toString();
+  }
+  
+}
